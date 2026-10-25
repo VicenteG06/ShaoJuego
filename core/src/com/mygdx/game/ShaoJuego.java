@@ -94,7 +94,7 @@ public class ShaoJuego extends ApplicationAdapter {
 		gano = false;
 		perdio = false;
 		personaje.reiniciar(secuencias.get(0).getPersonaje());
-		lluvia.reiniciar();
+		lluvia.setSecuencia(secuencias.get(0));
 	}
  
 	
@@ -129,6 +129,7 @@ public class ShaoJuego extends ApplicationAdapter {
 			revisarCambioDePersonaje();
 			if(personaje.estaMuerto()) {
 				perdio = true;
+				lluvia.reiniciar();
 			}
 		}
 
