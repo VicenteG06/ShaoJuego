@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.Input;
  
  
 public class ShaoJuego extends ApplicationAdapter {
@@ -37,6 +38,7 @@ public class ShaoJuego extends ApplicationAdapter {
 	private List<TipoPersonaje> secuencia;
 	private int indiceActual= 0;
 	private boolean gano= false;
+	private boolean perdio = false;
  
 	@Override
 	public void create() {
@@ -97,6 +99,13 @@ public class ShaoJuego extends ApplicationAdapter {
 			gano =true;
 		}
 	}
+	private void reiniciarJuego() {
+		indiceActual = 0;
+		gano = false;
+		perdio = false;
+		personaje.reiniciar(secuencia.get(0));
+		lluvia.reiniciar();
+	}
  
 	@Override
 	public void render(){
@@ -109,11 +118,14 @@ public class ShaoJuego extends ApplicationAdapter {
 				+ personaje.getHambre() + "/" + personaje.getMetaHambre(), 5, 475);
 		font.draw(batch, "Vidas : " + personaje.getVidas(), 720, 475);
  
-		//si ya ganó, el juego se detiene
-		if (!personaje.estaHerido() && !gano) {
+		//si ya gano o perdió, el juego se detiene
+		if (!personaje.estaHerido() && !gano && !perdio) {
 			personaje.actualizarMovimiento();
 			lluvia.actualizarMovimiento(personaje);
 			revisarCambioDePersonaje();
+			if(personaje.estaMuerto()) {
+				perdio = true;
+			}
 		}
  
 		personaje.dibujar(batch);
@@ -121,6 +133,14 @@ public class ShaoJuego extends ApplicationAdapter {
  
 		if (gano){
 			font.draw(batch, "GANASTE", 360, 260);
+			font.draw(batch, "Presiona R para jugar de nuevo", 290, 230);
+		}
+		if(perdio) {
+			font.draw(batch, "PERDISTE", 360, 260);
+			font.draw(batch, "Presiona R para reintentar", 300, 230);
+		}
+		if((gano || perdio) && Gdx.input.isKeyJustPressed(Input.Keys.R)){ 
+			reiniciarJuego();
 		}
  
 		batch.end();

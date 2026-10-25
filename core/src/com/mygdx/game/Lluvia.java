@@ -66,7 +66,7 @@ public class Lluvia {
 	      }
 	      if(raindrop.overlaps(tarro.getArea())) { //la gota choca con el tarro
 	    	if(rainDropsType.get(i)==1) { // gota danina
-	    	  tarro.daniar();
+	    	  tarro.daniar(1);
 	    	  
 	    	  rainDropsPos.removeIndex(i);
 	          rainDropsType.removeIndex(i);
@@ -84,12 +84,19 @@ public class Lluvia {
 	   
 	  for (int i=0; i < rainDropsPos.size; i++ ) {
 		  Rectangle raindrop = rainDropsPos.get(i);
-		  if(rainDropsType.get(i)==1) // gota dañina
+		  if(rainDropsType.get(i)==1) // gota mala
 	         batch.draw(gotaMala, raindrop.x, raindrop.y); 
 		  else
 			 batch.draw(gotaBuena, raindrop.x, raindrop.y); 
 	   }
    }
+   
+   public void reiniciar() {
+	   rainDropsPos.clear();
+	   rainDropsType.clear();
+	   lastDropTime = TimeUtils.nanoTime();
+   }
+   
    public void destruir() {
 	      dropSound.dispose();
 	      rainMusic.dispose();

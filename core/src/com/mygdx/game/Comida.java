@@ -1,8 +1,8 @@
 package com.mygdx.game;
 
 public class Comida implements Consumible {
-	private Jugador j; //referencia al jugador 
-	public Comida(Jugador ju){ //guarda al jugador
+	private Personaje j; //referencia al jugador 
+	public Comida(Personaje ju){ //guarda al jugador
 		j= ju; 
 	}
 	@Override

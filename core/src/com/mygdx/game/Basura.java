@@ -1,12 +1,12 @@
 package com.mygdx.game;
 
 public class Basura implements Consumible {
-	private Jugador j; //referencia al jugador 
-	public Basura(Jugador ju){ //guarda al jugador
+	private Personaje j; //referencia al jugador 
+	public Basura(Personaje ju){ //guarda al jugador
 		j= ju; 
 	}
 	@Override
 	public void afectar(){
-		j.recibirDano(1); //pierde una vida
+		j.daniar(1); //pierde una vida
 	}
 }

@@ -14,8 +14,8 @@ public class Personaje {
 	private TipoPersonaje tipo ;//STRATEGY
 	private Rectangle area;      
 	private Sound sonidoHerido;
-	private int vidas = 3 ;
-	private int satisfecho = 0 ;       
+	private int vidas = 3;
+	private int satisfecho = 0;       
 	private boolean herido= false;
 	private int tiempoHeridoMax= 50;
 	private int tiempoHerido;
@@ -53,23 +53,38 @@ public class Personaje {
 		}
 	}
  
-	public void daniar(){
-		vidas--;
+	public void daniar(int dano){
+		if(vidas > 0) {vidas-= dano;}
 		herido = true;
 		tiempoHerido =tiempoHeridoMax;
 		sonidoHerido.play();
 		
 	}
 	
+	public void ganarVida() {
+		if(vidas < 3) {
+			vidas++;
+		}
+	}
+	
+	public void reiniciar(TipoPersonaje tipoInicial) {
+		this.tipo = tipoInicial;
+		vidas = 3;
+		satisfecho = 0;
+		herido = false;
+		tiempoHerido = 0;
+		area.x = 800 / 2 - 64 / 2;
+		area.y = 20;
+	}
 	
 	
 	public void actualizarMovimiento() {
-		tipo.mover(area, Gdx.graphics.getDeltaTime()); //cada personaje se mueve según el método definidio en cada una de las clases
+		tipo.mover(area, Gdx.graphics.getDeltaTime()); //cada personaje se mueve segun el metodo definidio en cada una de las clases
 	}
  
 	public void dibujar(SpriteBatch batch){
 		
-		if (!herido){//la imagen la da el tipo actual
+		if (!herido){ //la imagen la da el tipo actual
 			batch.draw(tipo.getImagen(),area.x, area.y);
 			
 		} else {
@@ -86,6 +101,7 @@ public class Personaje {
  
 	public void destruir(){ sonidoHerido.dispose(); }
  
+	public boolean estaMuerto() { return vidas <= 0; }
  
 	public Rectangle getArea(){ return area; }
  
