@@ -10,7 +10,9 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.Input;
@@ -18,17 +20,18 @@ import com.badlogic.gdx.Input;
  
 public class ShaoJuego extends ApplicationAdapter {
 	private OrthographicCamera camera;
-	
+ 
 	private SpriteBatch batch;
 	private BitmapFont font;
+	private GlyphLayout medidorTexto;   // NUEVO: mide el ancho de un texto para centrarlo
  
 	private Personaje personaje ;
-//  private Tarro tarro;
-	
+ 
 	private Lluvia lluvia ;
  
-	
-	
+	// NUEVO: imagen de fondo
+	private Texture imgFondo;
+ 
 	// personajes imagenes
 	private Texture imgChiikawa;
 	private Texture imgHachiware;
@@ -43,24 +46,22 @@ public class ShaoJuego extends ApplicationAdapter {
 	@Override
 	public void create() {
 		font=new BitmapFont(); // use libGDX's default Arial font
+		font.getData().setScale(1.5f);//letra 1,5 veces más grande
+		font.getRegion().getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);   // NUEVO: bordes suaves
+		medidorTexto = new GlyphLayout();
  
-		// .........-----------------------------------------------------------------------------------------------
-		// cuando este chiikawa.png, hachiware.png y usagi.png cambiar nombres aqui
-		imgChiikawa =new Texture(Gdx.files.internal("cubi.png"));
-		imgHachiware =new Texture(Gdx.files.internal("bucket.png"));
-		imgUsagi = new Texture(Gdx.files.internal("cubi.png"));
+		//fondo e imágenes de los personajes
+		imgFondo = new Texture(Gdx.files.internal("fondo.png"));
+		imgChiikawa = new Texture(Gdx.files.internal("chiikawa.png"));
+		imgHachiware = new Texture(Gdx.files.internal("hachiware.png"));
+		imgUsagi = new Texture(Gdx.files.internal("usagi.png"));
  
-		
 		//orden en que aparecen los personajes
 		secuencia= new ArrayList<TipoPersonaje>();
 		secuencia.add(new Chiikawa(imgChiikawa));
 		secuencia.add(new Hachiware(imgHachiware));
 		secuencia.add(new Usagi(imgUsagi));
-
-		
-		
-		
-		
+ 
 		Sound hurtSound = Gdx.audio.newSound(Gdx.files.internal("hurt.ogg"));
 		personaje = new Personaje(secuencia.get(0), hurtSound);
  
@@ -82,7 +83,7 @@ public class ShaoJuego extends ApplicationAdapter {
 		lluvia.crear();
 	}
  
-
+ 
 //cuando el personaje actual se llena,se pasa al siguiente
 //STRATEGY
 	private void revisarCambioDePersonaje(){
@@ -99,12 +100,20 @@ public class ShaoJuego extends ApplicationAdapter {
 			gano =true;
 		}
 	}
+ 
 	private void reiniciarJuego() {
 		indiceActual = 0;
 		gano = false;
 		perdio = false;
 		personaje.reiniciar(secuencia.get(0));
 		lluvia.reiniciar();
+	}
+ 
+	
+	private void dibujarCentrado(String texto, float y) {
+		medidorTexto.setText(font, texto);
+		float x = (800 - medidorTexto.width) / 2;
+		font.draw(batch, texto, x, y);
 	}
  
 	@Override
@@ -114,11 +123,14 @@ public class ShaoJuego extends ApplicationAdapter {
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
  
+		batch.draw(imgFondo, 0, 0, 800, 480);   
+		
+		
 		font.draw(batch, personaje.getTipo().getNombre() + " - Hambre: "
-				+ personaje.getHambre() + "/" + personaje.getMetaHambre(), 5, 475);
-		font.draw(batch, "Vidas : " + personaje.getVidas(), 720, 475);
+				+ personaje.getHambre() + "/" + personaje.getMetaHambre(), 8, 472);
+		font.draw(batch, "Vidas : " + personaje.getVidas(), 680, 472);
  
-		//si ya gano o perdió, el juego se detiene
+		//si ya ganó o perdió, el juego se detiene
 		if (!personaje.estaHerido() && !gano && !perdio) {
 			personaje.actualizarMovimiento();
 			lluvia.actualizarMovimiento(personaje);
@@ -131,15 +143,16 @@ public class ShaoJuego extends ApplicationAdapter {
 		personaje.dibujar(batch);
 		lluvia.actualizarDibujoLluvia(batch);
  
+
 		if (gano){
-			font.draw(batch, "GANASTE", 360, 260);
-			font.draw(batch, "Presiona R para jugar de nuevo", 290, 230);
+			dibujarCentrado("GANASTE", 260);
+			dibujarCentrado("Presiona R para jugar de nuevo", 225);
 		}
 		if(perdio) {
-			font.draw(batch, "PERDISTE", 360, 260);
-			font.draw(batch, "Presiona R para reintentar", 300, 230);
+			dibujarCentrado("PERDISTE", 260);
+			dibujarCentrado("Presiona R para reintentar", 225);
 		}
-		if((gano || perdio) && Gdx.input.isKeyJustPressed(Input.Keys.R)){ 
+		if((gano || perdio) && Gdx.input.isKeyJustPressed(Input.Keys.R)){
 			reiniciarJuego();
 		}
  
@@ -150,9 +163,10 @@ public class ShaoJuego extends ApplicationAdapter {
 	public void dispose() {
 		personaje.destruir();
 		lluvia.destruir();
-		imgChiikawa.dispose(); //---------------------------------------------------------------------------------
+		imgFondo.dispose();
+		imgChiikawa.dispose();
 		imgHachiware.dispose();
-		imgUsagi.dispose();      
+		imgUsagi.dispose();
 		batch.dispose();
 		font.dispose();
 	}
