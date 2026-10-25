@@ -50,9 +50,9 @@ public class Lluvia {
 	      lastDropTime = TimeUtils.nanoTime();
 	   }
 	
-   public void actualizarMovimiento(Tarro tarro) { 
+   public void actualizarMovimiento(Personaje tarro) { 
 	   // generar gotas de lluvia 
-	   if(TimeUtils.nanoTime() - lastDropTime > 100000000) crearGotaDeLluvia();
+	   if(TimeUtils.nanoTime() - lastDropTime > 800000000) crearGotaDeLluvia();
 	  
 	   
 	   // revisar si las gotas cayeron al suelo o chocaron con el tarro
@@ -65,13 +65,13 @@ public class Lluvia {
 	    	  rainDropsType.removeIndex(i);
 	      }
 	      if(raindrop.overlaps(tarro.getArea())) { //la gota choca con el tarro
-	    	if(rainDropsType.get(i)==1) { // gota daÃ±ina
-	    	  tarro.dañar();
+	    	if(rainDropsType.get(i)==1) { // gota danina
+	    	  tarro.daniar();
 	    	  
 	    	  rainDropsPos.removeIndex(i);
 	          rainDropsType.removeIndex(i);
 	      	}else { // gota a recolectar
-	    	  tarro.sumarPuntos(10);
+	    	  tarro.comer();
 	          dropSound.play();
 	          rainDropsPos.removeIndex(i);
 	          rainDropsType.removeIndex(i);
