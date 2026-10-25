@@ -1,105 +1,81 @@
 package com.mygdx.game;
 
-import com.badlogic.gdx.Gdx;
+
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.TimeUtils;
+import java.util.ArrayList;
+
 
 public class Lluvia {
-	private Array<Rectangle> rainDropsPos;
-	private Array<Integer> rainDropsType;
-    private long lastDropTime;
-    private Texture gotaBuena;
-    private Texture gotaMala;
-    private Sound dropSound;
-    private Music rainMusic;
-	   
-	public Lluvia(Texture gotaBuena, Texture gotaMala, Sound ss, Music mm) {
-		rainMusic = mm;
-		dropSound = ss;
-		this.gotaBuena = gotaBuena;
-		this.gotaMala = gotaMala;
-	}
-	
-	public void crear() {
-		rainDropsPos = new Array<Rectangle>();
-		rainDropsType = new Array<Integer>();
-		crearGotaDeLluvia();
-	      // start the playback of the background music immediately
-	      rainMusic.setLooping(true);
-	      rainMusic.play();
-	}
-	
-	private void crearGotaDeLluvia() {
-	      Rectangle raindrop = new Rectangle();
-	      raindrop.x = MathUtils.random(0, 800-64);
-	      raindrop.y = 480;
-	      raindrop.width = 64;
-	      raindrop.height = 64;
-	      rainDropsPos.add(raindrop);
-	      // ver el tipo de gota
-	      if (MathUtils.random(1,10)<3)	    	  
-	         rainDropsType.add(1);
-	      else 
-	    	 rainDropsType.add(2);
-	      lastDropTime = TimeUtils.nanoTime();
-	   }
-	
-   public void actualizarMovimiento(Personaje tarro) { 
-	   // generar gotas de lluvia 
-	   if(TimeUtils.nanoTime() - lastDropTime > 800000000) crearGotaDeLluvia();
-	  
-	   
-	   // revisar si las gotas cayeron al suelo o chocaron con el tarro
-	   for (int i=0; i < rainDropsPos.size; i++ ) {
-		  Rectangle raindrop = rainDropsPos.get(i);
-	      raindrop.y -= 300 * Gdx.graphics.getDeltaTime();
-	      //cae al suelo y se elimina
-	      if(raindrop.y + 64 < 0) {
-	    	  rainDropsPos.removeIndex(i); 
-	    	  rainDropsType.removeIndex(i);
-	      }
-	      if(raindrop.overlaps(tarro.getArea())) { //la gota choca con el tarro
-	    	if(rainDropsType.get(i)==1) { // gota danina
-	    	  tarro.daniar(1);
-	    	  
-	    	  rainDropsPos.removeIndex(i);
-	          rainDropsType.removeIndex(i);
-	      	}else { // gota a recolectar
-	    	  tarro.comer();
-	          dropSound.play();
-	          rainDropsPos.removeIndex(i);
-	          rainDropsType.removeIndex(i);
-	      	}
-	      }
-	   }   
-   }
-   
-   public void actualizarDibujoLluvia(SpriteBatch batch) { 
-	   
-	  for (int i=0; i < rainDropsPos.size; i++ ) {
-		  Rectangle raindrop = rainDropsPos.get(i);
-		  if(rainDropsType.get(i)==1) // gota mala
-	         batch.draw(gotaMala, raindrop.x, raindrop.y); 
-		  else
-			 batch.draw(gotaBuena, raindrop.x, raindrop.y); 
-	   }
-   }
-   
-   public void reiniciar() {
-	   rainDropsPos.clear();
-	   rainDropsType.clear();
-	   lastDropTime = TimeUtils.nanoTime();
-   }
-   
-   public void destruir() {
-	      dropSound.dispose();
-	      rainMusic.dispose();
-   }
-   
+    private ArrayList<Consumible> consumibles;
+    private ArrayList<Enemigo> enemigos;
+    private Secuencia secuencia;
+    private float tiempoDesdeUltimo = 0;
+ 
+    public Lluvia(Secuencia faseInicial) {
+        this.secuencia = faseInicial;
+        consumibles = new ArrayList<Consumible>();
+        enemigos = new ArrayList<Enemigo>();
+    }
+ 
+    public void crear() {
+        Music musica = GestorRecursos.getInstancia().getMusica(GestorRecursos.MUSICA_FONDO);
+        musica.setLooping(true);
+        musica.play();
+    }
+
+    public void setSecuencia(Secuencia nuevaFase) {
+        this.secuencia = nuevaFase;
+        reiniciar();
+    }
+ 
+    public void reiniciar() {
+        consumibles.clear();
+        enemigos.clear();
+        tiempoDesdeUltimo = 0;
+    }
+ 
+    public void agregarConsumible(Consumible consumible) {
+        consumibles.add(consumible);
+    }
+ 
+    public void agregarEnemigo(Enemigo enemigo) {
+        enemigos.add(enemigo);
+    }
+ 
+    public void actualizar(float delta, Personaje personaje) {
+        tiempoDesdeUltimo += delta;
+        if (tiempoDesdeUltimo >= secuencia.getIntervalo()) {
+            secuencia.generarObjeto(this);
+            tiempoDesdeUltimo = 0;
+        }
+ 
+        for (int i = consumibles.size() - 1; i >= 0; i--) {
+            Consumible c = consumibles.get(i);
+            c.actualizar(delta, personaje);
+            if (!c.estaActivo()) {
+                consumibles.remove(i);
+            }
+        }
+        for (int i = enemigos.size() - 1; i >= 0; i--) {
+            Enemigo e = enemigos.get(i);
+            e.actualizar(delta, personaje);
+            if (!e.estaActivo()) {
+                enemigos.remove(i);
+            }
+        }
+    }
+ 
+    public void dibujar(SpriteBatch batch) {
+        for (Consumible c : consumibles) {
+            c.dibujar(batch);
+        }
+        for (Enemigo e : enemigos) {
+            e.dibujar(batch);
+        }
+    }
+ 
+    public void destruir() {
+        GestorRecursos.getInstancia().getMusica(GestorRecursos.MUSICA_FONDO).stop();
+    }
 }

@@ -1,12 +1,22 @@
 package com.mygdx.game;
 
-public class Basura implements Consumible {
-	private Personaje j; //referencia al jugador 
-	public Basura(Personaje ju){ //guarda al jugador
-		j= ju; 
+public class Basura extends Objeto implements Consumible {
+	public Basura(float x, float y, float velocidad){ 
+		super(GestorRecursos.getInstancia().getTextura(GestorRecursos.IMG_BASURA), x, y, velocidad);
 	}
+	
+    @Override
+    public void mover(float delta) {
+        caer(delta);
+    }
+ 
+    @Override
+    public void chocar(Personaje p) {
+        afectar(p);
+    }
+	
 	@Override
-	public void afectar(){
-		j.daniar(1); //pierde una vida
+	public void afectar(Personaje p){
+		p.daniar(1); //pierde una vida
 	}
 }

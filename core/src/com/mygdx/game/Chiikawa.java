@@ -3,7 +3,7 @@ package com.mygdx.game;
 import com.badlogic.gdx.graphics.Texture;
 public class Chiikawa extends TipoPersonaje {
 	
-	public Chiikawa(Texture imagen) {
-        super("Chiikawa",imagen,15, 400);
+	public Chiikawa() {
+        super("Chiikawa",GestorRecursos.getInstancia().getTextura(GestorRecursos.IMG_CHIIKAWA), 15, 400);
     }
 }

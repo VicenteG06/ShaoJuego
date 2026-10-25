@@ -16,6 +16,7 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.Input;
+
  
  
 public class ShaoJuego extends ApplicationAdapter {
@@ -29,61 +30,45 @@ public class ShaoJuego extends ApplicationAdapter {
  
 	private Lluvia lluvia ;
  
-	// NUEVO: imagen de fondo
-	private Texture imgFondo;
- 
-	// personajes imagenes
-	private Texture imgChiikawa;
-	private Texture imgHachiware;
-	private Texture imgUsagi ;
- 
-	//orden de los personajes y en cual vamos
-	private List<TipoPersonaje> secuencia;
-	private int indiceActual= 0;
-	private boolean gano= false;
+	private List<Secuencia> secuencias; // Para pasar entre chiikawa, hachiware y usagi
+	private int indiceActual = 0;
+	private boolean gano = false;
 	private boolean perdio = false;
  
 	@Override
 	public void create() {
-		font=new BitmapFont(); // use libGDX's default Arial font
-		font.getData().setScale(1.5f);//letra 1,5 veces más grande
-		font.getRegion().getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);   // NUEVO: bordes suaves
+		font = new BitmapFont();   // fuente Arial por defecto de libGDX
 		medidorTexto = new GlyphLayout();
- 
-		//fondo e imágenes de los personajes
-		imgFondo = new Texture(Gdx.files.internal("fondo.png"));
-		imgChiikawa = new Texture(Gdx.files.internal("chiikawa.png"));
-		imgHachiware = new Texture(Gdx.files.internal("hachiware.png"));
-		imgUsagi = new Texture(Gdx.files.internal("usagi.png"));
- 
-		//orden en que aparecen los personajes
-		secuencia= new ArrayList<TipoPersonaje>();
-		secuencia.add(new Chiikawa(imgChiikawa));
-		secuencia.add(new Hachiware(imgHachiware));
-		secuencia.add(new Usagi(imgUsagi));
- 
-		Sound hurtSound = Gdx.audio.newSound(Gdx.files.internal("hurt.ogg"));
-		personaje = new Personaje(secuencia.get(0), hurtSound);
- 
-		// load the drop sound effect and the rain background "music"
-		Texture gota = new Texture(Gdx.files.internal("drop.png"));
-		Texture gotaMala = new Texture(Gdx.files.internal("dropBad.png"));
- 
-		Sound dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.wav"));
- 
-		Music rainMusic = Gdx.audio.newMusic(Gdx.files.internal("rain.mp3"));
-		lluvia = new Lluvia(gota, gotaMala, dropSound, rainMusic);
- 
-		// camera
-		camera = new OrthographicCamera();
-		camera.setToOrtho(false, 800, 480);
-		batch = new SpriteBatch();
- 
+	 
+		crearSecuencias();
+		Secuencia primera = secuencias.get(0);
+	 
+		GestorRecursos recurso = GestorRecursos.getInstancia();
+		personaje = new Personaje(primera.getPersonaje(), recurso.getSonido(GestorRecursos.SONIDO_HERIDO));
 		personaje.crear();
+	 
+		lluvia = new Lluvia(primera);
 		lluvia.crear();
-	}
- 
- 
+	 
+		camera = new OrthographicCamera();
+		camera.setToOrtho(false, Objeto.ANCHO_PANTALLA, Objeto.ALTO_JUGABLE);
+		batch = new SpriteBatch();
+	   }
+
+	// Se crean las secuencias del juego usando el builder
+	private void crearSecuencias() {
+		secuencias = new ArrayList<Secuencia>();
+	 
+		// Se usa a chiikawa y solo se genera comida y basura
+		secuencias.add(new Builder().personaje(new Chiikawa()).probComida(3).probBasura(1).intervalo(0.8f).velocidadCaida(250).build());
+	 
+		// Se usa a hachiware y caen goblins y comida
+		secuencias.add(new Builder().personaje(new Hachiware()).probComida(3).probGoblin(1).intervalo(0.7f).velocidadCaida(270).build());
+	 
+		// Se usa a usagi y caen estrellas buenas y malas
+		secuencias.add(new Builder().personaje(new Usagi()).probComida(3).probEstrellaBuena(0.5f).probEstrellaMala(1.5f).intervalo(0.5f).velocidadCaida(300).build());
+	   }
+	 
 //cuando el personaje actual se llena,se pasa al siguiente
 //STRATEGY
 	private void revisarCambioDePersonaje(){
@@ -91,13 +76,16 @@ public class ShaoJuego extends ApplicationAdapter {
 			return;
 		}
  
-		boolean quedanPersonajes = indiceActual <secuencia.size()-1;
+		boolean quedanPersonajes = indiceActual < secuencias.size()-1;
  
 		if (quedanPersonajes){
 			indiceActual++;
-			personaje.setTipo(secuencia.get(indiceActual));
+			Secuencia siguiente = secuencias.get(indiceActual);
+			personaje.setTipo(siguiente.getPersonaje());
+			lluvia.setSecuencia(siguiente);
 		}else {
-			gano =true;
+			gano = true;
+			lluvia.reiniciar();
 		}
 	}
  
@@ -105,7 +93,7 @@ public class ShaoJuego extends ApplicationAdapter {
 		indiceActual = 0;
 		gano = false;
 		perdio = false;
-		personaje.reiniciar(secuencia.get(0));
+		personaje.reiniciar(secuencias.get(0).getPersonaje());
 		lluvia.reiniciar();
 	}
  
@@ -123,26 +111,26 @@ public class ShaoJuego extends ApplicationAdapter {
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
  
-		batch.draw(imgFondo, 0, 0, 800, 480);   
+		batch.draw(GestorRecursos.getInstancia().getTextura(GestorRecursos.IMG_FONDO), 0, 0, Objeto.ANCHO_PANTALLA, Objeto.ALTO_JUGABLE); 
 		
+		personaje.dibujar(batch);
+		lluvia.dibujar(batch);
+ 
 		
 		font.draw(batch, personaje.getTipo().getNombre() + " - Hambre: "
 				+ personaje.getHambre() + "/" + personaje.getMetaHambre(), 8, 472);
 		font.draw(batch, "Vidas : " + personaje.getVidas(), 680, 472);
  
+		float delta = Gdx.graphics.getDeltaTime();
 		//si ya ganó o perdió, el juego se detiene
 		if (!personaje.estaHerido() && !gano && !perdio) {
 			personaje.actualizarMovimiento();
-			lluvia.actualizarMovimiento(personaje);
+			lluvia.actualizar(delta, personaje);
 			revisarCambioDePersonaje();
 			if(personaje.estaMuerto()) {
 				perdio = true;
 			}
 		}
- 
-		personaje.dibujar(batch);
-		lluvia.actualizarDibujoLluvia(batch);
- 
 
 		if (gano){
 			dibujarCentrado("GANASTE", 260);
@@ -160,14 +148,10 @@ public class ShaoJuego extends ApplicationAdapter {
 	}
  
 	@Override
-	public void dispose() {
-		personaje.destruir();
-		lluvia.destruir();
-		imgFondo.dispose();
-		imgChiikawa.dispose();
-		imgHachiware.dispose();
-		imgUsagi.dispose();
-		batch.dispose();
-		font.dispose();
-	}
+    public void dispose() {
+        lluvia.destruir();
+        batch.dispose();
+        font.dispose();
+        GestorRecursos.getInstancia().liberar();
+    }
 }

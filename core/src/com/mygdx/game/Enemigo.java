@@ -1,14 +1,25 @@
 package com.mygdx.game;
 
-public abstract class Enemigo {
-	private int dano;
-	private int velocidad; //esto depende de como se haga el spawn de los enemigos
-	//setters
-	public void setDano(int d) {dano= d;}
-	public void setVelocidad(int v) {velocidad= v;}
-	//getters
-	public int getDano() { return dano; }
-	public int getVelocidad() { return velocidad; }
-	//metodos abstractos
-	public abstract void atacar();
+import com.badlogic.gdx.graphics.Texture;
+
+
+public abstract class Enemigo extends Objeto{
+	private int danio;
+	
+    public Enemigo(Texture imagen, float x, float y, float velocidad, int danio) {
+        super(imagen, x, y, velocidad);
+        this.danio = danio;
+    }
+ 
+    @Override
+    public final void chocar(Personaje p) {
+        atacar(p);
+    }
+ 
+    // quita 1 vida
+    public void atacar(Personaje p) {
+        p.daniar(danio);
+    }
+ 
+    public int getDanio() { return danio; }
 }

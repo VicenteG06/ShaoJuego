@@ -3,7 +3,7 @@ import com.badlogic.gdx.graphics.Texture;
 
 
 public class Hachiware extends TipoPersonaje {
-	public Hachiware(Texture imagen) {
-        super("Hachiware",imagen, 25, 400);
+	public Hachiware() {
+        super("Hachiware", GestorRecursos.getInstancia().getTextura(GestorRecursos.IMG_HACHIWARE), 25, 400);
     }
 }

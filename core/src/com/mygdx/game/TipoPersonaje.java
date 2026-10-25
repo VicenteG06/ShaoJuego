@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
+
 public abstract class TipoPersonaje {
 	
 	public static final int ANCHO_PANTALLA = 800;

@@ -1,15 +1,14 @@
 package com.mygdx.game;
 
 public class EstrellaMala extends Enemigo {
-	private Personaje j; //referencia al jugador
-	//constructor
-	public EstrellaMala(Personaje ju){ //darle valor a d y v. cuando se decida, cambiar
-		setDano(ju.getVidas());
-		setVelocidad(X); //NO SE
-		j= ju;
-	}
-	@Override
-	public void atacar(){
-		j.daniar(getDano()); 
-	}	
+    private static final float FACTOR_VELOCIDAD = 2.5f;   // 2.5 veces mas rapido que lo demas
+
+    public EstrellaMala(float x, float y, float velocidadCaida) {
+        super(GestorRecursos.getInstancia().getTextura(GestorRecursos.IMG_GOBLIN), x, y, velocidadCaida * FACTOR_VELOCIDAD, 1);
+    }
+
+    @Override
+    public void mover(float delta) {
+        caer(delta);
+    }
 }

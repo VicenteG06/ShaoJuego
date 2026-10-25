@@ -8,8 +8,8 @@ import com.badlogic.gdx.math.Rectangle;
 public class Usagi extends TipoPersonaje {
 	private static final float FACTOR_DIAGONAL = 0.7071f;
 
-    public Usagi(Texture imagen) {
-        super("Usagi", imagen, 40, 400);
+    public Usagi() {
+        super("Usagi", GestorRecursos.getInstancia().getTextura(GestorRecursos.IMG_USAGI), 40, 400);
     }
 
     

@@ -1,16 +1,14 @@
 package com.mygdx.game;
 
 public class Goblin extends Enemigo { //
-	private Personaje j; //referencia al jugador
-	//constructor
-	public Goblin(Personaje ju){ //darle velocidad
-		setDano(1);
-		setVelocidad(X); //NO SE 
-		j= ju;
-	}
-	@Override
-	public void atacar(){
-		j.daniar(getDano());
-	}	
-	
+    private static final float FACTOR_VELOCIDAD = 1.5f;   // .5 veces mas rapido que lo demas
+
+    public Goblin(float x, float y, float velocidadCaida) {
+        super(GestorRecursos.getInstancia().getTextura(GestorRecursos.IMG_GOBLIN), x, y, velocidadCaida * FACTOR_VELOCIDAD, 1);
+    }
+
+    @Override
+    public void mover(float delta) {
+        caer(delta);
+    }
 }
