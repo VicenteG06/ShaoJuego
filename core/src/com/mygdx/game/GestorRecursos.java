@@ -14,11 +14,11 @@ public class GestorRecursos {
 	public static final String IMG_CHIIKAWA = "chiikawa.png";
 	public static final String IMG_HACHIWARE = "hachiware.png";
 	public static final String IMG_USAGI = "usagi.png";
-    public static final String IMG_COMIDA = "drop.png";
-    public static final String IMG_BASURA = "dropBad.png";
-    public static final String IMG_GOBLIN = "dropBad.png"; // CAMBIAR DESPUES
-    public static final String IMG_ESTRELLA_BUENA = "drop.png"; //CAMBIAR DESPUES
-    public static final String IMG_ESTRELLA_MALA  = "dropBad.png"; //CAMBIAR DESPUES
+    public static final String IMG_COMIDA = "empanada.png";
+    public static final String IMG_BASURA = "basura.png";
+    public static final String IMG_GOBLIN = "goblin1.png"; // CAMBIAR DESPUES
+    public static final String IMG_ESTRELLA_BUENA = "estrella_buena.png"; //CAMBIAR DESPUES
+    public static final String IMG_ESTRELLA_MALA  = "estrella_mala.png"; //CAMBIAR DESPUES
     
     public static final String IMG_FONDO = "fondo.png";
 	
