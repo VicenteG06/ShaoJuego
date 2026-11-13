@@ -3,8 +3,16 @@ package com.mygdx.game;
 import com.badlogic.gdx.math.MathUtils;
 
 public class Comida extends Objeto implements Consumible {
-	public Comida(float x, float y, float velocidad){ 
-		super(GestorRecursos.getInstancia().getTextura(elegirComida()), x, y, velocidad); 
+
+	//""receta" para crear este objeto (la usan los builders de los niveles)
+	public static final FabricaObjeto FABRICA = new FabricaObjeto() {
+		@Override
+		public Objeto crear(float velocidad) {
+			return new Comida(velocidad);
+		}
+	};
+	public Comida(float velocidad) {
+		super(GestorRecursos.getInstancia().getTextura(elegirComida()), xAlAzar(), arriba(), velocidad);
 	}
 	
 	private static String elegirComida() {

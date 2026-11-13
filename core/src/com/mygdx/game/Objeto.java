@@ -4,11 +4,24 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 
+import com.badlogic.gdx.math.MathUtils;
+
+
 
 public abstract class Objeto {
 	public static final int ANCHO_PANTALLA = 800;
 	public static final int ALTO_JUGABLE = 480;
 	public static final int TAMANIO = 64;
+	
+	//x al azar dentro de la pantalla (para los objetos que caen desde arriba)
+	protected static float xAlAzar() {
+		return MathUtils.random(0, ANCHO_PANTALLA - TAMANIO);
+	}
+	 
+	// altura justo sobre el borde superior de la pantalla
+	protected static float arriba() {
+		return ALTO_JUGABLE;
+	}
 	
 	private Rectangle area;
 	private Texture imagen;
@@ -41,6 +54,13 @@ public abstract class Objeto {
 	public void caer(float delta) {
 		area.y -= velocidad * delta;
 	}
+	
+	// mueve el objeto dx pixeles en horizontal y dy en vertical
+	protected void desplazar(float dx, float dy) {
+		area.x += dx;
+		area.y += dy;
+	}
+	
 	
 	public boolean fueraDePantalla() {
         return area.y + area.height < 0

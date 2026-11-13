@@ -6,17 +6,17 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import java.util.ArrayList;
 
 
+
+
 public class Lluvia {
-    private ArrayList<Consumible> consumibles;
-    private ArrayList<Enemigo> enemigos;
+	private ArrayList<Objeto> objetos;
     private Secuencia secuencia;
     private float tiempoDesdeUltimo = 0;
  
     public Lluvia(Secuencia faseInicial) {
-        this.secuencia = faseInicial;
-        consumibles = new ArrayList<Consumible>();
-        enemigos = new ArrayList<Enemigo>();
-    }
+		this.secuencia = faseInicial;
+		objetos = new ArrayList<Objeto>();
+	}
  
     public void crear() {
         Music musica = GestorRecursos.getInstancia().getMusica(GestorRecursos.MUSICA_FONDO);
@@ -30,52 +30,38 @@ public class Lluvia {
     }
  
     public void reiniciar() {
-        consumibles.clear();
-        enemigos.clear();
-        tiempoDesdeUltimo = 0;
-    }
+		objetos.clear();
+		tiempoDesdeUltimo = 0;
+	}
  
-    public void agregarConsumible(Consumible consumible) {
-        consumibles.add(consumible);
-    }
- 
-    public void agregarEnemigo(Enemigo enemigo) {
-        enemigos.add(enemigo);
-    }
+    public void agregar(Objeto objeto) {
+		objetos.add(objeto);
+	}
  
     public void actualizar(float delta, Personaje personaje) {
-        tiempoDesdeUltimo += delta;
-        if (tiempoDesdeUltimo >= secuencia.getIntervalo()) {
-            secuencia.generarObjeto(this);
-            tiempoDesdeUltimo = 0;
-        }
+		tiempoDesdeUltimo += delta;
+		if (tiempoDesdeUltimo >= secuencia.getIntervalo()) {
+			secuencia.generarObjeto(this);
+			tiempoDesdeUltimo = 0;
+		}
  
-        for (int i = consumibles.size() - 1; i >= 0; i--) {
-            Consumible c = consumibles.get(i);
-            c.actualizar(delta, personaje);
-            if (!c.estaActivo()) {
-                consumibles.remove(i);
-            }
-        }
-        for (int i = enemigos.size() - 1; i >= 0; i--) {
-            Enemigo e = enemigos.get(i);
-            e.actualizar(delta, personaje);
-            if (!e.estaActivo()) {
-                enemigos.remove(i);
-            }
-        }
-    }
+		// se recorre de atras hacia adelante para poder borrar sin saltarse objetos
+		for (int i = objetos.size() - 1; i >= 0; i--) {
+			Objeto objeto = objetos.get(i);
+			objeto.actualizar(delta, personaje);   // metodo plantilla
+			if (!objeto.estaActivo()) {
+				objetos.remove(i);
+			}
+		}
+	}
  
     public void dibujar(SpriteBatch batch) {
-        for (Consumible c : consumibles) {
-            c.dibujar(batch);
-        }
-        for (Enemigo e : enemigos) {
-            e.dibujar(batch);
-        }
-    }
+		for (Objeto objeto : objetos) {
+			objeto.dibujar(batch);
+		}
+	}
  
-    public void destruir() {
-        GestorRecursos.getInstancia().getMusica(GestorRecursos.MUSICA_FONDO).stop();
-    }
+	public void destruir() {
+		GestorRecursos.getInstancia().getMusica(GestorRecursos.MUSICA_FONDO).stop();
+	}
 }

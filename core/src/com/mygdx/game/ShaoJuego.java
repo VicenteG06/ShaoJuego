@@ -6,11 +6,7 @@ import java.util.List;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
  
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -55,19 +51,21 @@ public class ShaoJuego extends ApplicationAdapter {
 		batch = new SpriteBatch();
 	   }
 
-	// Se crean las secuencias del juego usando el builder
+	//CLIENTE del builder
+	//elige los builders y le pide al director que construya cada nivel
 	private void crearSecuencias() {
 		secuencias = new ArrayList<Secuencia>();
-	 
-		// Se usa a chiikawa y solo se genera comida y basura
-		secuencias.add(new Builder().personaje(new Chiikawa()).probComida(3).probBasura(1).intervalo(0.8f).velocidadCaida(250).build());
-	 
-		// Se usa a hachiware y caen goblins y comida
-		secuencias.add(new Builder().personaje(new Hachiware()).probComida(3).probGoblin(1).intervalo(0.7f).velocidadCaida(270).build());
-	 
-		// Se usa a usagi y caen estrellas buenas y malas
-		secuencias.add(new Builder().personaje(new Usagi()).probComida(3).probEstrellaBuena(0.5f).probEstrellaMala(1.5f).intervalo(0.5f).velocidadCaida(300).build());
-	   }
+
+		List<SecuenciaBuilder> builders = new ArrayList<SecuenciaBuilder>();
+		builders.add(new NivelChiikawaBuilder());
+		builders.add(new NivelHachiwareBuilder());
+		builders.add(new NivelUsagiBuilder());
+
+		for (SecuenciaBuilder builder : builders) {
+			DirectorNiveles director = new DirectorNiveles(builder);
+			secuencias.add(director.construirNivel());
+		}
+	}
 	 
 //cuando el personaje actual se llena,se pasa al siguiente
 //STRATEGY
