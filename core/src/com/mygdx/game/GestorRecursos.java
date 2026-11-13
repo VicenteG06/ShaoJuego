@@ -14,16 +14,21 @@ public class GestorRecursos {
 	public static final String IMG_CHIIKAWA = "chiikawa.png";
 	public static final String IMG_HACHIWARE = "hachiware.png";
 	public static final String IMG_USAGI = "usagi.png";
-    public static final String IMG_COMIDA = "empanada.png";
+	public static final String IMG_EMPANADA = "empanada.png";
+	public static final String IMG_SOPAIPILLA = "sopaipilla.png";
+	public static final String IMG_COMPLETO = "completo.png";
+	public static final String[] IMG_COMIDAS = { IMG_EMPANADA, IMG_SOPAIPILLA, IMG_COMPLETO };
     public static final String IMG_BASURA = "basura.png";
     public static final String IMG_GOBLIN = "goblin1.png"; // CAMBIAR DESPUES
     public static final String IMG_ESTRELLA_BUENA = "estrella_buena.png"; //CAMBIAR DESPUES
     public static final String IMG_ESTRELLA_MALA  = "estrella_mala.png"; //CAMBIAR DESPUES
     
     public static final String IMG_FONDO = "fondo.png";
-	
+    public static final String IMG_VICTORIA = "fondo_victoria.png";   // NUEVO
+    
+    
     public static final String SONIDO_HERIDO = "hurt.ogg";
-    public static final String MUSICA_FONDO = "rain.mp3";
+    public static final String MUSICA_FONDO = "musica.mp3";
     
     
     private static GestorRecursos instancia; // La unica instancia

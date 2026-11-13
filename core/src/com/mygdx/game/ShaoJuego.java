@@ -109,42 +109,44 @@ public class ShaoJuego extends ApplicationAdapter {
 		ScreenUtils.clear(0, 0, 0.2f, 1);
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
-		batch.begin();
- 
-		batch.draw(GestorRecursos.getInstancia().getTextura(GestorRecursos.IMG_FONDO), 0, 0, Objeto.ANCHO_PANTALLA, Objeto.ALTO_JUGABLE); 
+		batch.begin();		
 		
-		personaje.dibujar(batch);
-		lluvia.dibujar(batch);
- 
-		
-		font.draw(batch, personaje.getTipo().getNombre() + " - Hambre: "
-				+ personaje.getHambre() + "/" + personaje.getMetaHambre(), 8, 472);
-		font.draw(batch, "Vidas : " + personaje.getVidas(), 680, 472);
- 
-		float delta = Gdx.graphics.getDeltaTime();
-		//si ya ganó o perdió, el juego se detiene
-		if (!personaje.estaHerido() && !gano && !perdio) {
-			personaje.actualizarMovimiento();
-			lluvia.actualizar(delta, personaje);
-			revisarCambioDePersonaje();
-			if(personaje.estaMuerto()) {
-				perdio = true;
-				lluvia.reiniciar();
+		if (gano) {
+			
+			batch.draw(GestorRecursos.getInstancia().getTextura(GestorRecursos.IMG_VICTORIA), 0, 0, Objeto.ANCHO_PANTALLA, Objeto.ALTO_JUGABLE);
+			dibujarCentrado("GANASTE!", 80);
+			dibujarCentrado("Presiona R para jugar de nuevo", 45);
+		} else {
+			batch.draw(GestorRecursos.getInstancia().getTextura(GestorRecursos.IMG_FONDO), 0, 0, Objeto.ANCHO_PANTALLA, Objeto.ALTO_JUGABLE);
+
+			personaje.dibujar(batch);
+			lluvia.dibujar(batch);
+
+			font.draw(batch, personaje.getTipo().getNombre() + " - Hambre: "
+					+ personaje.getHambre() + "/" + personaje.getMetaHambre(), 8, 472);
+			font.draw(batch, "Vidas : " + personaje.getVidas(), 680, 472);
+
+			float delta = Gdx.graphics.getDeltaTime();
+			//si perdió, el juego se detiene
+			if (!personaje.estaHerido() && !perdio) {
+				personaje.actualizarMovimiento();
+				lluvia.actualizar(delta, personaje);
+				revisarCambioDePersonaje();
+				if (personaje.estaMuerto()) {
+					perdio = true;
+					lluvia.reiniciar();
+				}
+			}
+
+			if (perdio) {
+				dibujarCentrado("PERDISTE", 260);
+				dibujarCentrado("Presiona R para reintentar", 225);
 			}
 		}
 
-		if (gano){
-			dibujarCentrado("GANASTE", 260);
-			dibujarCentrado("Presiona R para jugar de nuevo", 225);
-		}
-		if(perdio) {
-			dibujarCentrado("PERDISTE", 260);
-			dibujarCentrado("Presiona R para reintentar", 225);
-		}
-		if((gano || perdio) && Gdx.input.isKeyJustPressed(Input.Keys.R)){
+		if ((gano || perdio) && Gdx.input.isKeyJustPressed(Input.Keys.R)) {
 			reiniciarJuego();
 		}
- 
 		batch.end();
 	}
  
