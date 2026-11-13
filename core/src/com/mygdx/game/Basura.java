@@ -1,6 +1,6 @@
 package com.mygdx.game;
 
-public class Basura extends Objeto implements Consumible {
+public class Basura extends Objeto {
 
 	//""receta" para crear este objeto (la usan los builders de los niveles)
 	public static final FabricaObjeto FABRICA = new FabricaObjeto() {
@@ -20,11 +20,7 @@ public class Basura extends Objeto implements Consumible {
  
     @Override
     public void chocar(Personaje p) {
-        afectar(p);
+        p.daniar(1);
     }
 	
-	@Override
-	public void afectar(Personaje p){
-		p.daniar(1); //pierde una vida
-	}
 }

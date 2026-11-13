@@ -30,7 +30,12 @@ public class ShaoJuego extends ApplicationAdapter {
 	private int indiceActual = 0;
 	private boolean gano = false;
 	private boolean perdio = false;
- 
+
+	// anuncio temporal en pantalla
+	private static final float DURACION_ANUNCIO = 2.5f;
+	private String anuncio = null;
+	private float tiempoAnuncio = 0;
+	
 	@Override
 	public void create() {
 		font = new BitmapFont();   // fuente Arial por defecto de libGDX
@@ -81,12 +86,22 @@ public class ShaoJuego extends ApplicationAdapter {
 			Secuencia siguiente = secuencias.get(indiceActual);
 			personaje.setTipo(siguiente.getPersonaje());
 			lluvia.setSecuencia(siguiente);
+			mostrarAnuncio(siguiente.getPersonaje().getMensajeInicio()) ;
 		}else {
 			gano = true;
 			lluvia.reiniciar();
 		}
 	}
  
+	//muestra un texto en pantalla por unos segundos (si el personaje no tiene anuncio, no hace nada)
+	private void mostrarAnuncio(String texto) {
+		if (texto == null) {
+			return;
+		}
+		anuncio = texto;
+		tiempoAnuncio = DURACION_ANUNCIO;
+	}
+
 	private void reiniciarJuego() {
 		indiceActual = 0;
 		gano = false;
@@ -134,8 +149,13 @@ public class ShaoJuego extends ApplicationAdapter {
 					perdio = true;
 					lluvia.reiniciar();
 				}
+			}			
+			// anuncio temporal: se dibuja mientras quede tiempo
+			if (tiempoAnuncio > 0) {
+				tiempoAnuncio -= delta;
+				dibujarCentrado(anuncio, 300);
 			}
-
+			
 			if (perdio) {
 				dibujarCentrado("PERDISTE", 260);
 				dibujarCentrado("Presiona R para reintentar", 225);

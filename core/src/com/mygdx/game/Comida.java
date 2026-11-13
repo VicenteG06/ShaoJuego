@@ -2,7 +2,7 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.math.MathUtils;
 
-public class Comida extends Objeto implements Consumible {
+public class Comida extends Objeto{
 
 	//""receta" para crear este objeto (la usan los builders de los niveles)
 	public static final FabricaObjeto FABRICA = new FabricaObjeto() {
@@ -27,11 +27,7 @@ public class Comida extends Objeto implements Consumible {
 	
 	@Override
 	public void chocar(Personaje p) {
-		afectar(p);
+		p.comer();
 	}
 	
-	@Override
-	public void afectar(Personaje p){
-		p.comer(); //le anade comida. Comer depende del personaje con el que se este jugando
-	}
 }

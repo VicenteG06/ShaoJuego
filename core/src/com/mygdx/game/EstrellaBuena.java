@@ -1,6 +1,6 @@
 package com.mygdx.game;
 
-public class EstrellaBuena extends Objeto implements Consumible {
+public class EstrellaBuena extends Objeto {
 
 	//""receta" para crear este objeto (la usan los builders de los niveles)
 	public static final FabricaObjeto FABRICA = new FabricaObjeto() {
@@ -21,11 +21,6 @@ public class EstrellaBuena extends Objeto implements Consumible {
  
     @Override
     public void chocar(Personaje p) {
-        afectar(p);
-    }
- 
-    @Override
-    public void afectar(Personaje p) {
         p.ganarVida();
     }
 }

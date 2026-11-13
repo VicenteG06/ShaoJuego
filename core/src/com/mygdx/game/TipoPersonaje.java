@@ -52,7 +52,11 @@ public abstract class TipoPersonaje {
             area.x = ANCHO_PANTALLA - area.width;
         }
     }
-
+    
+    //anuncio que se muestra cuando este personaje entra al juego
+    public String getMensajeInicio() {
+        return null;
+    }
     
     public String getNombre() { return nombre; }
     public Texture getImagen() { return imagen; }
